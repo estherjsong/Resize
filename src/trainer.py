@@ -5,6 +5,7 @@ import os
 import torch
 from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
+from xpu_accelerator import XPUAccelerator  # Import the custom accelerator
 
 from model import Module
 from data import DataModule
@@ -33,7 +34,10 @@ def main(cfg: DictConfig):
                                save_last=True,
                                mode='max')
 
-    trainer = Trainer(gpus=cfg.gpus,
+    accelerator = XPUAccelerator()
+    trainer = Trainer(
+                      devices=2,
+                      accelerator=accelerator,  
                       benchmark=True,
                       callbacks=[callback],
                       check_val_every_n_epoch=cfg.check_val_every_n_epoch,
